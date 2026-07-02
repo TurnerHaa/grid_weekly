@@ -61,52 +61,69 @@ gen = gen.pivot_table(
 # 2 - NESO demand data
 # ===============================
 # API request - NESO demand data
-url_start = 'https://api.neso.energy'
-url_end = '/api/3/action/datastore_search?resource_id=8a4a771c-3929-4e56-93ad-cdf13219dea5'
+dmnd = pd.read_csv('https://api.neso.energy/dataset/7a12172a-939c-404c-b581-a6128b74f588/resource/177f6fa4-ae49-4182-81ea-0c6b35f26ca6/download/demanddataupdate.csv')
+
+dmnd = pd.DataFrame(dmnd)
+
+print(dmnd.tail())
 
 
-today = dt.now(timezone.utc)
-start_date = pd.to_datetime('2026-01-01', utc=True)
 
-dmnd = []
 
-i = 1
 
-while start_date <= today:
-    url = url_start + url_end
 
-    response = requests.get(url)
 
-    if response.status_code == 200:
-        print('NESO demand API call successful!')
-    else:
-        raise Exception(f"NESO demand API call not successful. Status code: {response.status_code}")
 
-    dmnd_resp = response.json()
-    records = dmnd_resp['result']['records']
+
+# url_start = 'https://api.neso.energy'
+# url_end = '/api/3/action/datastore_search?resource_id=8a4a771c-3929-4e56-93ad-cdf13219dea5'
+
+
+# today = dt.now(timezone.utc)
+# start_date = pd.to_datetime('2026-01-01', utc=True)
+
+# dmnd = []
+
+# i = 1
+
+# while start_date <= today:
+#     url = url_start + url_end
+
+#     response = requests.get(url)
+
+#     if response.status_code == 200:
+#         print('NESO demand API call successful!')
+#     else:
+#         raise Exception(f"NESO demand API call not successful. Status code: {response.status_code}")
+
+#     dmnd_resp = response.json()
+#     records = dmnd_resp['result']['records']
     
-    if not records:
-        print("Reached the end of available records. Stopping.")
-        break
+#     if not records:
+#         print("Reached the end of available records. Stopping.")
+#         break
 
-    dmnd.extend(records)
+#     dmnd.extend(records)
 
-    start_date = pd.to_datetime(dmnd_resp['result']['records'][-1]['SETTLEMENT_DATE'], utc=True)
-    url_end = dmnd_resp['result']['_links']['next']
+#     start_date = pd.to_datetime(dmnd_resp['result']['records'][-1]['SETTLEMENT_DATE'], utc=True)
+#     url_end = dmnd_resp['result']['_links']['next']
 
-    print(f'Loop run:{i} times. Collected data up to {start_date}.')
+#     print(f'Loop run:{i} times. Collected data up to {start_date}.')
 
-    i += 1
+#     i += 1
 
-    print(url)
+#     print(url)
 
-# No flattening required!
-df_dmnd = pd.DataFrame(dmnd)
+# df_dmnd = pd.DataFrame(dmnd)
 
-# View the result
-print(df_dmnd.tail())
+# print(df_dmnd.tail())
 
-df_dmnd['SETTLEMENT_DATE'] = pd.to_datetime(df_dmnd['SETTLEMENT_DATE'], utc=True)
+# df_dmnd['SETTLEMENT_DATE'] = pd.to_datetime(df_dmnd['SETTLEMENT_DATE'], utc=True)
+
+
+
+
+
 
 
 
