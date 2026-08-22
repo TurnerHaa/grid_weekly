@@ -16,7 +16,7 @@ from highlight_text import ax_text
 # ===============================
 # system paths
 # ===============================
-script_dir = Path.cwd().parent
+script_dir = Path(__file__).resolve().parent.parent
 output_dir = script_dir / "data"
 
 output_dir.mkdir(parents=True, exist_ok=True)
@@ -123,7 +123,6 @@ grid = merged_data[[
     'EMBEDDED_WIND_GENERATION',
     'EMBEDDED_SOLAR_GENERATION',
     'NPSHYD',
-    'PS',
     'OTHER',
     'INTELEC',
     'INTFR',
@@ -148,18 +147,16 @@ grid = (
         'WIND': 'wind',
         'EMBEDDED_WIND_GENERATION': 'wind_embedded',
         'EMBEDDED_SOLAR_GENERATION': 'solar',
-        'PS': 'pumped_storage_hydro',
-        'NPSHYD': 'non_pumped_storage_hydro',
+        'NPSHYD': 'hydro',
         'OTHER': 'other'
     })
     .assign(
         gas = lambda x: x['ocgt'] + x['ccgt'],
-        wind = lambda x: x['wind'] + x['wind_embedded'],
-        hydro = lambda x: x['pumped_storage_hydro'] + x['non_pumped_storage_hydro']
+        wind = lambda x: x['wind'] + x['wind_embedded']
     )
 )
 
-grid = grid.drop(columns=['ocgt', 'ccgt', 'wind_embedded', 'pumped_storage_hydro', 'non_pumped_storage_hydro', 'other'])
+grid = grid.drop(columns=['ocgt', 'ccgt', 'wind_embedded', 'other'])
 
 start_cols = ['startTime', 'settlementPeriod', 'gas']
 ordered_cols = start_cols + [c for c in grid.columns if c not in start_cols]
@@ -234,7 +231,7 @@ source_font = {'fontname':'Karla', 'fontsize': 12, 'c': '#818589'}
 main_text = f"UK energy grid: {week_start.strftime('%d %B')} - {week_end.strftime('%d %B %Y')}"
 sub_text = "<Renewables>, <fossil fuels>, <interconnectors>, and <other> sources (GWh)"
 source_text = "Source: Elexon and NESO."
-note_text = "Note: Excludes the 'Other' category from Elexon data."
+_text = ": Excludes the 'Other' and 'Pumped storage' from Elexon data."
 
 
 # treemap colours
@@ -279,7 +276,7 @@ ax_text(0.8, 102, sub_text, transform=ax.transAxes, ha='left', va='bottom',
         ],
         **subtitle_font)
 ax.text(0.74, -0.02, source_text, transform=ax.transAxes, ha='left', va='bottom', **source_font)
-ax.text(0.01, -0.02, note_text, transform=ax.transAxes, ha='left', va='bottom', **source_font)
+ax.text(0.01, -0.02, _text, transform=ax.transAxes, ha='left', va='bottom', **source_font)
 
 
 # subtitle colour highlights
@@ -311,7 +308,5 @@ for text in ax.texts:
 image_output_dir = script_dir / "images"
 
 image_output_dir.mkdir(parents=True, exist_ok=True)
-
-
 
 plt.savefig(image_output_dir / f"{week_start}_{week_end}.png", dpi=300, bbox_inches="tight")
