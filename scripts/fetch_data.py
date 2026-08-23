@@ -228,7 +228,7 @@ subtitle_font = {'fontname':'Karla', 'fontsize': 18}
 source_font = {'fontname':'Karla', 'fontsize': 12, 'c': '#818589'}
 
 # define text strings
-main_text = f"UK energy grid: {week_start.strftime('%d %B')} - {week_end.strftime('%d %B %Y')}"
+main_text = f"GB energy grid: {week_start.strftime('%d %B')} - {week_end.strftime('%d %B %Y')}"
 sub_text = "<Renewables>, <fossil fuels>, <interconnectors>, and <other> sources (GWh)"
 source_text = "Source: Elexon and NESO."
 _text = ": Excludes the 'Other' and 'Pumped storage' from Elexon data."
